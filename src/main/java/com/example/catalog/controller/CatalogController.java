@@ -55,8 +55,12 @@ public class CatalogController {
 
     @GetMapping("/popularArtists")
     public JsonNode getPopularArtists() throws IOException {
-        ClassPathResource resource = new ClassPathResource("data/popular_artists.json");
-        return objectMapper.readTree(resource.getFile());
+        try {
+            ClassPathResource resource = new ClassPathResource("data/popular_artists.json");
+            return objectMapper.readTree(resource.getFile());
+        } catch (IOException e) {
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to read popular artists data");
+        }
     }
 
 
@@ -65,6 +69,7 @@ public class CatalogController {
     @GetMapping("/albums/{id}")
     public JsonNode getAlbumById(@PathVariable String id) throws IOException {
         try {
+            // Simulate 403 Forbidden if ID is all zeros
 
             if (id.matches("0+")) {
                 return createErrorResponse(HttpStatus.FORBIDDEN, "Access to this album ID is restricted");
@@ -75,7 +80,6 @@ public class CatalogController {
                 return createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid ID");
             }
 
-            // Simulate 403 Forbidden if ID is all zeros
 
 
             // Read albums data
