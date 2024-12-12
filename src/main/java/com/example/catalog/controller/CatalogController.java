@@ -65,15 +65,18 @@ public class CatalogController {
     @GetMapping("/albums/{id}")
     public JsonNode getAlbumById(@PathVariable String id) throws IOException {
         try {
+
+            if (id.matches("0+")) {
+                return createErrorResponse(HttpStatus.FORBIDDEN, "Access to this album ID is restricted");
+            }
+
             // Handle invalid ID format
             if (!SpotifyUtils.isValidId(id)) {
                 return createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid ID");
             }
 
             // Simulate 403 Forbidden if ID is all zeros
-            if (id.matches("0+")) {
-                return createErrorResponse(HttpStatus.FORBIDDEN, "Access to this album ID is restricted");
-            }
+
 
             // Read albums data
             ClassPathResource resource = new ClassPathResource("data/albums.json");
