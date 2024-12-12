@@ -21,18 +21,18 @@ public class CatalogController {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    private JsonNode createErrorResponse(HttpStatus status, String message) {
+    private ResponseEntity<JsonNode> createErrorResponse(HttpStatus status, String message) {
         ObjectNode errorResponse = objectMapper.createObjectNode();
         ObjectNode errorDetails = objectMapper.createObjectNode();
         errorDetails.put("status", status.value());
         errorDetails.put("message", message);
         errorResponse.set("error", errorDetails);
-        return errorResponse;
+        return new ResponseEntity<>(errorResponse, status);
     }
 
 
     @GetMapping("/popularSongs")
-    public JsonNode getPopularSongs() throws IOException {
+    public ResponseEntity<JsonNode> getPopularSongs() throws IOException {
         try {
             ClassPathResource resource = new ClassPathResource("data/popular_songs.json");
             File file = resource.getFile();
@@ -43,7 +43,7 @@ public class CatalogController {
                 return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, "Temporary service unavailability");
             }
 
-            return objectMapper.readTree(resource.getFile());
+            return new ResponseEntity<>(songs, HttpStatus.OK);
 
         } catch (IOException e) {
             // Internal server error if file read fails
@@ -54,10 +54,12 @@ public class CatalogController {
     }
 
     @GetMapping("/popularArtists")
-    public JsonNode getPopularArtists() throws IOException {
+    public ResponseEntity<JsonNode> getPopularArtists() throws IOException {
         try {
             ClassPathResource resource = new ClassPathResource("data/popular_artists.json");
-            return objectMapper.readTree(resource.getFile());
+            File file = resource.getFile();
+            JsonNode artists = objectMapper.readTree(file);
+            return new ResponseEntity<>(artists, HttpStatus.OK);
         } catch (IOException e) {
             return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to read popular artists data");
         }
@@ -67,7 +69,7 @@ public class CatalogController {
 
 
     @GetMapping("/albums/{id}")
-    public JsonNode getAlbumById(@PathVariable String id) throws IOException {
+    public ResponseEntity<JsonNode> getAlbumById(@PathVariable String id) throws IOException {
         try {
             // Simulate 403 Forbidden if ID is all zeros
 
@@ -90,7 +92,7 @@ public class CatalogController {
             // Find album by ID
             JsonNode album = albums.get(id);
             if (album != null) {
-                return album;
+                return new ResponseEntity<>(album, HttpStatus.OK);
             } else {
                 // 404 if album ID does not exist
                 return createErrorResponse(HttpStatus.NOT_FOUND, "Album not found");
