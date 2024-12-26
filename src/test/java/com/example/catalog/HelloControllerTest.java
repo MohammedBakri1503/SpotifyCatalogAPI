@@ -1,3 +1,7 @@
+
+
+
+
 package com.example.catalog;
 
 import org.junit.jupiter.api.Test;
@@ -24,3 +28,4 @@ public class HelloControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("Hello from API! There is no UI here..."));
     }
 }
+

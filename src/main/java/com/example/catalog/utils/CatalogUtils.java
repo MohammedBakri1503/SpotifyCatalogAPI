@@ -27,7 +27,7 @@ public class CatalogUtils {
      * @param minPopularity The minimal popularity to filter
      * @return List of songs filtered by popularises great or equal to minPopularity.
      */
-    public List<JsonNode> filterSongsByPopularity(List<JsonNode> songs, int minPopularity) {
+    public static List<JsonNode> filterSongsByPopularity(List<JsonNode> songs, int minPopularity) {
         return songs.stream()
                 .filter(song -> song.get("popularity").asInt() >= minPopularity)
                 .collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class CatalogUtils {
      * @param songs List of songs (JsonNode objects).
      * @return The longest song.
      */
-    public JsonNode getLongestSong(List<JsonNode> songs) {
+    public static JsonNode getLongestSong(List<JsonNode> songs) {
         return songs.stream()
                 .max(Comparator.comparingInt(song -> song.get("duration_ms").asInt()))
                 .orElse(null);
@@ -91,7 +91,7 @@ public class CatalogUtils {
      * @param songs List of songs (JsonNode objects).
      * @return The most recent song.
      */
-    public JsonNode getMostRecentSong(List<JsonNode> songs) {
+    public static JsonNode getMostRecentSong(List<JsonNode> songs) {
         return songs.stream()
                 .max(Comparator.comparing(song -> song.get("album").get("release_date").asText()))
                 .orElse(null);
