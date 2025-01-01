@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class LRUCacheTest {
-
+    Integer k =1;
     LRUCache<String, String> cache;
 
     @Nested
