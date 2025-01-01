@@ -51,4 +51,30 @@ public class RateLimitITest {
             assertFalse(response.getHeaders().containsKey(XRateLimitRemaining));
         }
     }
+
+    /*@Test
+    public void testInvalidRequests() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/invalid-endpoint", String.class);
+        assertEquals(HttpStatusCode.valueOf(404), response.getStatusCode(), "Expected status code 404 for invalid endpoint");
+    }*/
+
+
+    @Test
+    public void testRequestsAfterRetryAfterInterval() throws InterruptedException {
+        Thread.sleep(60000); // 1 minute
+
+        int allowedRequests = 10;
+        for (int i = 0; i < allowedRequests; i++) {
+            ResponseEntity<String> response = restTemplate.getForEntity(API_ENDPOINT, String.class);
+            assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        }
+
+        // Wait for the retry-after interval to expire
+        Thread.sleep(60000); // 1 minute
+
+        ResponseEntity<String> response = restTemplate.getForEntity(API_ENDPOINT, String.class);
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode(), "Expected status code 200 after retry-after interval");
+    }
+
+
 }
